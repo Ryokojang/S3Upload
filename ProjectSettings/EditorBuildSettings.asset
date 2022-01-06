@@ -4,5 +4,11 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Examples/CognitoSyncManagerSample.unity
+    guid: c18d9419d726ba745862202a131b81ad
+  - enabled: 1
+    path: Assets/Examples/S3Example.unity
+    guid: 6b0285e289508274b9fc0a77b6f8b8b2
   m_configObjects: {}
