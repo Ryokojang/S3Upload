@@ -191,4 +191,66 @@ public class AWSManager : MonoBehaviour
             }
         });
     }
+
+    public InputField userNameSearch;
+    public Text Email;
+    public Text UserName;
+    public Button SearchButton;
+    public Text SearchButtonText;
+
+    public void Download()
+    {
+        if(userNameSearch.text != "")
+        {
+            UserInfo downloadedUserInfo = new UserInfo();
+            string itemToDownload = userNameSearch.text;
+
+            var request = new ListObjectsRequest()
+            {
+                BucketName = "unitys3course9-ryoko",
+            };
+
+            S3Client.ListObjectsAsync(request, (responseObject) => 
+            {
+                S3Client.GetObjectAsync("unitys3course9-ryoko", itemToDownload, (responseObject) => 
+                {
+                    if(responseObject.Exception == null)
+                    {
+                        byte[] data = null;
+                        using (StreamReader sr = new StreamReader(responseObject.Response.ResponseStream))
+                        {
+                            using(MemoryStream ms = new MemoryStream())
+                            {
+                                var buffer = new byte[50000];
+                                var bytesRead = default(int);
+                                while((bytesRead = sr.BaseStream.Read(buffer, 0, buffer.Length)) > 0)
+                                {
+                                    ms.Write(buffer, 0, bytesRead);
+                                }
+                                data = ms.ToArray();
+                            }
+                        }
+
+                        using(MemoryStream memory = new MemoryStream(data))
+                        {
+                            BinaryFormatter bf = new BinaryFormatter();
+                            downloadedUserInfo = (UserInfo)bf.Deserialize(memory);
+                            UserName.text = downloadedUserInfo.userName;
+                            Email.text = downloadedUserInfo.email;
+                        }
+                    }
+                    else
+                    {
+                        UserName.text = "Not Found";
+                        Email.text = "Error";
+                        SearchButton.GetComponent<Image>().color = Color.red;
+                    }
+                });
+            });
+        }
+        else
+        {
+            userNameSearch.text = "Fill in Info Please";
+        }
+    }
 }
