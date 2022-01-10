@@ -535,7 +535,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2511b0e5d755534788c9faede304537, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  path: Assets/message.txt
   email: {fileID: 479176351}
   userName: {fileID: 1253113154}
   buttonText: {fileID: 1374542141}
@@ -815,6 +814,7 @@ MonoBehaviour:
   UploadButtonText: {fileID: 1374542141}
   IdentityPoolID: ap-northeast-2:c4e9edd9-92a0-4389-82d6-494b7c056f1c
   Region: ap-northeast-2
+  identityId: 
   S3Region: ap-northeast-2
 --- !u!4 &900433280
 Transform:
@@ -1374,7 +1374,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 592797213}
         m_TargetAssemblyTypeName: Write, Assembly-CSharp
-        m_MethodName: Button
+        m_MethodName: UploadFile
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

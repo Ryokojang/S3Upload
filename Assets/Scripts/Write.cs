@@ -7,7 +7,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 public class Write : MonoBehaviour
 {
-    public string path = "Assets/message.txt";
+    
 
     public InputField email;
     public InputField userName;
@@ -15,6 +15,8 @@ public class Write : MonoBehaviour
 
     public void UpdateText()
     {
+        string path = "Assets/message.txt";
+        
         Debug.Log("Method Called");
         StreamWriter writer = new StreamWriter(path, true);
 
@@ -23,21 +25,20 @@ public class Write : MonoBehaviour
 
         writer.WriteLine("Hello we are connecting Unity to AWS s3");
         writer.WriteLine(emailText + "\n" + userNameText + "\n" + System.DateTime.UtcNow.ToString());
-        FindObjectOfType<AWSManager>().Upload(path);
-
         writer.Close();
+
+        FindObjectOfType<AWSManager>().UpdateText(path);
     }
 
     public void UploadPicture()
     {
         Debug.Log("Method Called");
-        StreamWriter writer = new StreamWriter(path, true);
         
         string picturePath = "Assets/301.png";
-        FindObjectOfType<AWSManager>().Upload(picturePath);
+        FindObjectOfType<AWSManager>().UploadPicture(picturePath);
     }
 
-    public void Button()
+    public void UploadFile()
     {
         if (email.text == "" || userName.text == "")
         {
@@ -52,7 +53,7 @@ public class Write : MonoBehaviour
             };
 
             byte[] userInfoData = ObjectToByteArray(userInfo);
-            FindObjectOfType<AWSManager>().Upload(userInfoData, userName.text);
+            FindObjectOfType<AWSManager>().UploadFile(userInfoData, userName.text);
         }
     }
 
@@ -64,33 +65,4 @@ public class Write : MonoBehaviour
 
         return ms.ToArray();
     }
-
-    /*
-    public void Button()
-    {
-        if (email.text == "" || userName.text == "")
-        {
-            buttonText.text = "Please Insert Info";
-        }
-        else
-        {
-            UserInfo userInfo = new UserInfo()
-            {
-                email = email.text,
-                userName = userName.text
-            };
-
-            byte[] userInfoData = ObjectTyByteArray(userInfo);
-            FindObjectOfType<AWSManager>().Upload(userInfoData, userName.text);
-        }
-    }
-
-    private byte[] ObjectTyByteArray(UserInfo obj)
-    {
-        BinaryFormatter bf = new BinaryFormatter();
-        MemoryStream ms = new MemoryStream();
-        bf.Serialize(ms, obj);
-
-        return ms.ToArray();
-    }/**/
 }

@@ -17,7 +17,7 @@ public class AWSManager : MonoBehaviour
 
     public string IdentityPoolID = "ap-northeast-2:c4e9edd9-92a0-4389-82d6-494b7c056f1c";
     public string Region = RegionEndpoint.APNortheast2.SystemName;
-
+    public string identityId;
     private static AWSManager _instance;
     public static AWSManager Instance
     {
@@ -45,7 +45,7 @@ public class AWSManager : MonoBehaviour
         }
     }
 
-    //public string identityId;
+    
 
     public string S3Region = RegionEndpoint.APNortheast2.SystemName;
     private RegionEndpoint _S3Region
@@ -93,15 +93,45 @@ public class AWSManager : MonoBehaviour
                 {
                     Debug.Log(result.Exception);
                 }
-                string identityId = result.Response;
+                identityId = result.Response;
                 Debug.Log(identityId);
             });
 
         }
     }
 
+    public void UpdateText(string path)
+    {
+        FileStream fs = new FileStream(path, FileMode.Open);
 
-    public void Upload(string path)
+        PostObjectRequest request = new PostObjectRequest()
+        {
+            Bucket = "unitys3course9-ryoko",
+            Key = "message.txt",
+            InputStream = fs,
+            CannedACL = S3CannedACL.Private,
+            Region = _S3Region
+        };
+
+        S3Client.PostObjectAsync(request, (responseObj) =>
+        {
+            if (responseObj.Exception == null)
+            {
+                Debug.Log("Upload Success");
+                UploadButton.GetComponent<Image>().color = Color.green;
+                UploadButtonText.text = "Success!";
+            }
+            else
+            {
+                Debug.Log("Error " + responseObj.Exception);
+                UploadButton.GetComponent<Image>().color = Color.red;
+                UploadButtonText.text = "Error!";
+            }
+        });
+    }
+
+    //이미지 업로드
+    public void UploadPicture(string path)
     {
         FileStream fs = new FileStream(path, FileMode.Open);
 
@@ -131,7 +161,8 @@ public class AWSManager : MonoBehaviour
         });
     }
 
-    public void Upload(byte[] data, string filename)
+    //data를 써서 filename으로 업로드
+    public void UploadFile(byte[] data, string filename)
     {
         MemoryStream ms = new MemoryStream(data);
 
