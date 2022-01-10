@@ -131,14 +131,14 @@ public class AWSManager : MonoBehaviour
     }
 
     //이미지 업로드
-    public void UploadPicture(string path)
+    public void UploadPicture(string path, string _key)
     {
         FileStream fs = new FileStream(path, FileMode.Open);
 
         PostObjectRequest request = new PostObjectRequest()
         {
             Bucket = "unitys3course9-ryoko",
-            Key = "301.png",
+            Key = _key,
             InputStream = fs,
             CannedACL = S3CannedACL.Private,
             Region = _S3Region

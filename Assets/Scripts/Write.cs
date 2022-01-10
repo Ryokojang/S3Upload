@@ -37,8 +37,9 @@ public class Write : MonoBehaviour
     {
         Debug.Log("Method Called");
         
-        string picturePath = "Assets/301.png";
-        FindObjectOfType<AWSManager>().UploadPicture(picturePath);
+        //string picturePath = "Assets/301.png";
+        string picturePath = "Assets/1.jpg";
+        FindObjectOfType<AWSManager>().UploadPicture(picturePath, "1.jpg");
     }
 
     public void UploadFile()
@@ -78,7 +79,7 @@ public class Write : MonoBehaviour
             };
 
             byte[] userInfoData = ObjectToByteArray(userInfo);
-            FindObjectOfType<AWSManager>().UploadFile(userInfoData, userName.text);
+            FindObjectOfType<AWSManager>().UploadFile(userInfoData, userName.text+".jpg");
         }
     }
 
@@ -109,5 +110,14 @@ public class Write : MonoBehaviour
         RenderTexture.active = previous;
         RenderTexture.ReleaseTemporary(renderTex);
         return readableTex;
+    }
+
+    public void ManageNewPicture(byte[] newImageData)
+    {
+        Texture2D tex = new Texture2D(0, 0);
+        tex.LoadImage(newImageData);
+        tex.Apply();
+        Sprite newImage = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100.0f);
+        avatar.sprite = newImage;
     }
 }
