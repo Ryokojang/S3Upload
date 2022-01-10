@@ -2,16 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Amazon;
+using Amazon.CognitoIdentity;
 using Amazon.S3;
 using Amazon.S3.Model;
 using UnityEngine.UI;
+using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using Amazon.CognitoIdentity;
-using System;
 
 public class AWSManager : MonoBehaviour
 {
+    public Button UploadButton;
+    public Text UploadButtonText;
+
     public string IdentityPoolID = "ap-northeast-2:c4e9edd9-92a0-4389-82d6-494b7c056f1c";
     public string Region = RegionEndpoint.APNortheast2.SystemName;
 
@@ -105,7 +108,7 @@ public class AWSManager : MonoBehaviour
         PostObjectRequest request = new PostObjectRequest()
         {
             Bucket = "unitys3course9-ryoko",
-            Key = "message.txt",
+            Key = "301.png",
             InputStream = fs,
             CannedACL = S3CannedACL.Private,
             Region = _S3Region
@@ -116,10 +119,44 @@ public class AWSManager : MonoBehaviour
             if(responseObj.Exception == null)
             {
                 Debug.Log("Upload Success");
+                UploadButton.GetComponent<Image>().color = Color.green;
+                UploadButtonText.text = "Success!";
             }
             else
             {
                 Debug.Log("Error " + responseObj.Exception);
+                UploadButton.GetComponent<Image>().color = Color.red;
+                UploadButtonText.text = "Error!";
+            }
+        });
+    }
+
+    public void Upload(byte[] data, string filename)
+    {
+        MemoryStream ms = new MemoryStream(data);
+
+        PostObjectRequest request = new PostObjectRequest()
+        {
+            Bucket = "unitys3course9-ryoko",
+            Key = filename,
+            InputStream = ms,
+            CannedACL = S3CannedACL.Private,
+            Region = _S3Region
+        };
+
+        S3Client.PostObjectAsync(request, (responseObj) =>
+        {
+            if (responseObj.Exception == null)
+            {
+                Debug.Log("Upload Success");
+                UploadButton.GetComponent<Image>().color = Color.green;
+                UploadButtonText.text = "Success!";
+            }
+            else
+            {
+                Debug.Log("Error " + responseObj.Exception);
+                UploadButton.GetComponent<Image>().color = Color.red;
+                UploadButtonText.text = "Error!";
             }
         });
     }

@@ -537,7 +537,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   path: Assets/message.txt
   email: {fileID: 479176351}
-  username: {fileID: 1253113154}
+  userName: {fileID: 1253113154}
+  buttonText: {fileID: 1374542141}
 --- !u!114 &592797214
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -810,8 +811,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 402f464cfda99644d8b95ecaa3520000, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UploadButton: {fileID: 2137452304}
+  UploadButtonText: {fileID: 1374542141}
   IdentityPoolID: ap-northeast-2:c4e9edd9-92a0-4389-82d6-494b7c056f1c
   Region: ap-northeast-2
+  S3Region: ap-northeast-2
 --- !u!4 &900433280
 Transform:
   m_ObjectHideFlags: 0
@@ -1260,7 +1264,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.6415094, g: 0.6263795, b: 0.6263795, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
