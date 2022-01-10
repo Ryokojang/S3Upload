@@ -79,7 +79,7 @@ public class Write : MonoBehaviour
             };
 
             byte[] userInfoData = ObjectToByteArray(userInfo);
-            FindObjectOfType<AWSManager>().UploadFile(userInfoData, userName.text+".jpg");
+            FindObjectOfType<AWSManager>().UploadFile(userInfoData, userName.text);
         }
     }
 

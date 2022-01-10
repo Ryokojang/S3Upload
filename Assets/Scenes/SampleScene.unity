@@ -1112,6 +1112,7 @@ MonoBehaviour:
   UserName: {fileID: 23033686}
   SearchButton: {fileID: 2105845415}
   SearchButtonText: {fileID: 315645772}
+  DownLoadImage: {fileID: 1613854012}
 --- !u!4 &900433280
 Transform:
   m_ObjectHideFlags: 0

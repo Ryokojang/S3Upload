@@ -197,7 +197,8 @@ public class AWSManager : MonoBehaviour
     public Text UserName;
     public Button SearchButton;
     public Text SearchButtonText;
-
+    public Image DownLoadImage;
+    public byte[] downloadedImageData;
     public void Download()
     {
         if(userNameSearch.text != "")
@@ -237,7 +238,10 @@ public class AWSManager : MonoBehaviour
                             downloadedUserInfo = (UserInfo)bf.Deserialize(memory);
                             UserName.text = downloadedUserInfo.userName;
                             Email.text = downloadedUserInfo.email;
+                            downloadedImageData = downloadedUserInfo.picture;
                         }
+
+                        ManageDownloadedPicture(downloadedImageData);
                     }
                     else
                     {
@@ -252,5 +256,14 @@ public class AWSManager : MonoBehaviour
         {
             userNameSearch.text = "Fill in Info Please";
         }
+    }
+
+    public void ManageDownloadedPicture(byte[] newImageData)
+    {
+        Texture2D tex = new Texture2D(0, 0);
+        tex.LoadImage(newImageData);
+        tex.Apply();
+        Sprite newImage = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100.0f);
+        DownLoadImage.sprite = newImage;
     }
 }
