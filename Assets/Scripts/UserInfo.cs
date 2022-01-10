@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class UserInfo : MonoBehaviour
+
+public class UserInfo
 {
     public string email;
     public string userName;
