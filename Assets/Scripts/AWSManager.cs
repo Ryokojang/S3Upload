@@ -198,7 +198,7 @@ public class AWSManager : MonoBehaviour
     public Button SearchButton;
     public Text SearchButtonText;
     public Image DownLoadImage;
-    public byte[] downloadedImageData;
+    byte[] downloadedImageData;
     public void Download()
     {
         if(userNameSearch.text != "")
