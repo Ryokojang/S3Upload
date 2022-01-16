@@ -92,7 +92,7 @@ public class Write : MonoBehaviour
         return ms.ToArray();
     }
 
-    private Texture2D duplicateTexture(Texture2D source)
+    public Texture2D duplicateTexture(Texture2D source)
     {
         RenderTexture renderTex = RenderTexture.GetTemporary(
             source.width,

@@ -12,6 +12,12 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 public class AWSManager : MonoBehaviour
 {
+    public void UsedOnlyForAOTCOdeGeneration()
+    {
+        AndroidJavaObject jo = new AndroidJavaObject("android.os.Message");
+        int valueString = jo.Get<int>("what");
+    }
+
     public Button UploadButton;
     public Text UploadButtonText;
 
