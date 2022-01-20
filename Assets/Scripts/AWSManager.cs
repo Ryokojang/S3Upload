@@ -78,6 +78,26 @@ public class AWSManager : MonoBehaviour
 
     private void Start()
     {
+#if UNITY_ANDROID
+        // Toggles the dimmed out state (where status/navigation content is darker)
+        //ApplicationChrome.dimmed = !ApplicationChrome.dimmed;
+
+        // Set the status/navigation background color (set to 0xff000000 to disable)
+        //pplicationChrome.statusBarColor = ApplicationChrome.navigationBarColor = 0xffff3300;
+
+        // Makes the status bar and navigation bar visible (default)
+        ApplicationChrome.statusBarState = ApplicationChrome.States.Visible;
+        ApplicationChrome.navigationBarState = ApplicationChrome.States.Hidden;
+
+        // Makes the status bar and navigation bar visible over the content (different content resize method) 
+        //ApplicationChrome.statusBarState = ApplicationChrome.navigationBarState = ApplicationChrome.States.VisibleOverContent;
+
+        // Makes the status bar and navigation bar visible over the content, but a bit transparent
+        //ApplicationChrome.statusBarState = ApplicationChrome.navigationBarState = ApplicationChrome.States.TranslucentOverContent;
+
+        // Makes the status bar and navigation bar invisible (animated)
+        //ApplicationChrome.statusBarState = ApplicationChrome.navigationBarState = ApplicationChrome.States.Hidden;
+#endif
         {
             Debug.Log("Start!");
 

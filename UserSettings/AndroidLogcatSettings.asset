@@ -1,5 +1,5 @@
 {
-    "m_SelectedDeviceId": "",
+    "m_SelectedDeviceId": "127.0.0.1:62028",
     "m_SelectedPackage": {
         "deviceId": "",
         "name": "",
@@ -7,7 +7,14 @@
         "exited": false
     },
     "m_SelectedPriority": 0,
-    "m_KnownPackagesForSerialization": [],
+    "m_KnownPackagesForSerialization": [
+        {
+            "deviceId": "127.0.0.1:62028",
+            "name": "com.vphone.launcher",
+            "processId": 2543,
+            "exited": false
+        }
+    ],
     "m_Tags": {
         "m_Entries": [
             {
