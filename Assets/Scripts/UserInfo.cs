@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class UserInfo
 {
-    public string email;
-    public string userName;
+    //public string email;
+    //public string userName;
     public byte[] picture;
 }

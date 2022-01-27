@@ -262,8 +262,8 @@ public class AWSManager : MonoBehaviour
                         {
                             BinaryFormatter bf = new BinaryFormatter();
                             downloadedUserInfo = (UserInfo)bf.Deserialize(memory);
-                            UserName.text = downloadedUserInfo.userName;
-                            Email.text = downloadedUserInfo.email;
+                            //UserName.text = downloadedUserInfo.userName;
+                            //Email.text = downloadedUserInfo.email;
                             downloadedImageData = downloadedUserInfo.picture;
                         }
 

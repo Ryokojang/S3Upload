@@ -16,22 +16,7 @@ public class Write : MonoBehaviour
 
     public Image avatar;
     public Texture2D copy;
-    public void UpdateText()
-    {
-        string path = "Assets/message.txt";
-        
-        Debug.Log("Method Called");
-        StreamWriter writer = new StreamWriter(path, true);
-
-        string emailText = email.text;
-        string userNameText = userName.text;
-
-        writer.WriteLine("Hello we are connecting Unity to AWS s3");
-        writer.WriteLine(emailText + "\n" + userNameText + "\n" + System.DateTime.UtcNow.ToString());
-        writer.Close();
-
-        FindObjectOfType<AWSManager>().UpdateText(path);
-    }
+    
 
     public void UploadPicture()
     {
@@ -42,43 +27,26 @@ public class Write : MonoBehaviour
         FindObjectOfType<AWSManager>().UploadPicture(picturePath, "1.jpg");
     }
 
-    public void UploadFile()
-    {
-        if (email.text == "" || userName.text == "")
-        {
-            buttonText.text = "Fill in Info Please";
-        }
-        else
-        {
-            UserInfo userInfo = new UserInfo()
-            {
-                email = email.text,
-                userName = userName.text
-            };
-
-            byte[] userInfoData = ObjectToByteArray(userInfo);
-            FindObjectOfType<AWSManager>().UploadFile(userInfoData, userName.text);
-        }
-    }
+    
 
     public void Button()
     {
-        if (email.text == "" || userName.text == "")
+        /*if (email.text == "" || userName.text == "")
         {
             buttonText.text = "Fill in Info Please";
         }
-        else
+        else/**/
         {
+            //copy = duplicateTexture((Texture2D)avatar.mainTexture);
+            //UserInfo userInfo = new UserInfo()
+            //{
+            //    //email = email.text,
+            //    //userName = userName.text,
+            //    //picture = copy.EncodeToPNG()
+            //    picture = copy.EncodeToJPG()
+            //};
             copy = duplicateTexture((Texture2D)avatar.mainTexture);
-            UserInfo userInfo = new UserInfo()
-            {
-                email = email.text,
-                userName = userName.text,
-                //picture = copy.EncodeToPNG()
-                picture = copy.EncodeToJPG()
-            };
-
-            byte[] userInfoData = ObjectToByteArray(userInfo);
+            byte[] userInfoData = copy.EncodeToJPG();
             FindObjectOfType<AWSManager>().UploadFile(userInfoData, userName.text);
         }
     }
