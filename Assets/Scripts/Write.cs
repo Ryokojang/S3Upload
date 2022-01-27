@@ -18,17 +18,6 @@ public class Write : MonoBehaviour
     public Texture2D copy;
     
 
-    public void UploadPicture()
-    {
-        Debug.Log("Method Called");
-        
-        //string picturePath = "Assets/301.png";
-        string picturePath = "Assets/1.jpg";
-        FindObjectOfType<AWSManager>().UploadPicture(picturePath, "1.jpg");
-    }
-
-    
-
     public void Button()
     {
         /*if (email.text == "" || userName.text == "")

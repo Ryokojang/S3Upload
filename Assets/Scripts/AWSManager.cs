@@ -21,10 +21,18 @@ public class AWSManager : MonoBehaviour
     public Button UploadButton;
     public Text UploadButtonText;
 
-    public string IdentityPoolID = "ap-northeast-2:c4e9edd9-92a0-4389-82d6-494b7c056f1c";
+    
+
     public string Region = RegionEndpoint.APNortheast2.SystemName;
     public string identityId;
     private static AWSManager _instance;
+
+    //public string IdentityPoolID = "ap-northeast-2:c4e9edd9-92a0-4389-82d6-494b7c056f1c";
+    //string Bucketname = "unitys3course9-ryoko";
+    
+    string IdentityPoolID = "ap-northeast-2:e33ea593-2e47-4aca-bd90-f797983beb0b";
+    string Bucketname = "lambda-test-bucket-resized";
+
     public static AWSManager Instance
     {
         get
@@ -78,112 +86,28 @@ public class AWSManager : MonoBehaviour
 
     private void Start()
     {
-#if UNITY_ANDROID
-        // Toggles the dimmed out state (where status/navigation content is darker)
-        //ApplicationChrome.dimmed = !ApplicationChrome.dimmed;
+        Debug.Log("Start!");
 
-        // Set the status/navigation background color (set to 0xff000000 to disable)
-        //pplicationChrome.statusBarColor = ApplicationChrome.navigationBarColor = 0xffff3300;
+        _instance = this;
 
-        // Makes the status bar and navigation bar visible (default)
-        ApplicationChrome.statusBarState = ApplicationChrome.States.Visible;
-        ApplicationChrome.navigationBarState = ApplicationChrome.States.Hidden;
-
-        // Makes the status bar and navigation bar visible over the content (different content resize method) 
-        //ApplicationChrome.statusBarState = ApplicationChrome.navigationBarState = ApplicationChrome.States.VisibleOverContent;
-
-        // Makes the status bar and navigation bar visible over the content, but a bit transparent
-        //ApplicationChrome.statusBarState = ApplicationChrome.navigationBarState = ApplicationChrome.States.TranslucentOverContent;
-
-        // Makes the status bar and navigation bar invisible (animated)
-        //ApplicationChrome.statusBarState = ApplicationChrome.navigationBarState = ApplicationChrome.States.Hidden;
-#endif
+        UnityInitializer.AttachToGameObject(this.gameObject);
+        try
         {
-            Debug.Log("Start!");
-
-            _instance = this;
-
-            UnityInitializer.AttachToGameObject(this.gameObject);
-            try
-            {
-                AWSConfigs.HttpClient = AWSConfigs.HttpClientOption.UnityWebRequest;
-            }
-            catch(Exception e)
-            {
-                Debug.Log(3);
-            }
-
-            Credentials.GetIdentityIdAsync(delegate (AmazonCognitoIdentityResult<string> result)
-            {
-                if(result.Exception != null)
-                {
-                    Debug.Log(result.Exception);
-                }
-                identityId = result.Response;
-                Debug.Log(identityId);
-            });
-
+            AWSConfigs.HttpClient = AWSConfigs.HttpClientOption.UnityWebRequest;
         }
-    }
-
-    public void UpdateText(string path)
-    {
-        FileStream fs = new FileStream(path, FileMode.Open);
-
-        PostObjectRequest request = new PostObjectRequest()
+        catch(Exception e)
         {
-            Bucket = "unitys3course9-ryoko",
-            Key = "message.txt",
-            InputStream = fs,
-            CannedACL = S3CannedACL.Private,
-            Region = _S3Region
-        };
+            Debug.Log(3);
+        }
 
-        S3Client.PostObjectAsync(request, (responseObj) =>
+        Credentials.GetIdentityIdAsync(delegate (AmazonCognitoIdentityResult<string> result)
         {
-            if (responseObj.Exception == null)
+            if(result.Exception != null)
             {
-                Debug.Log("Upload Success");
-                UploadButton.GetComponent<Image>().color = Color.green;
-                UploadButtonText.text = "Success!";
+                Debug.Log(result.Exception);
             }
-            else
-            {
-                Debug.Log("Error " + responseObj.Exception);
-                UploadButton.GetComponent<Image>().color = Color.red;
-                UploadButtonText.text = "Error!";
-            }
-        });
-    }
-
-    //이미지 업로드
-    public void UploadPicture(string path, string _key)
-    {
-        FileStream fs = new FileStream(path, FileMode.Open);
-
-        PostObjectRequest request = new PostObjectRequest()
-        {
-            Bucket = "unitys3course9-ryoko",
-            Key = _key,
-            InputStream = fs,
-            CannedACL = S3CannedACL.Private,
-            Region = _S3Region
-        };
-
-        S3Client.PostObjectAsync(request, (responseObj) =>
-        {
-            if(responseObj.Exception == null)
-            {
-                Debug.Log("Upload Success");
-                UploadButton.GetComponent<Image>().color = Color.green;
-                UploadButtonText.text = "Success!";
-            }
-            else
-            {
-                Debug.Log("Error " + responseObj.Exception);
-                UploadButton.GetComponent<Image>().color = Color.red;
-                UploadButtonText.text = "Error!";
-            }
+            identityId = result.Response;
+            Debug.Log(identityId);
         });
     }
 
@@ -194,7 +118,7 @@ public class AWSManager : MonoBehaviour
 
         PostObjectRequest request = new PostObjectRequest()
         {
-            Bucket = "unitys3course9-ryoko",
+            Bucket = Bucketname,
             Key = filename,
             InputStream = ms,
             CannedACL = S3CannedACL.Private,
@@ -234,12 +158,12 @@ public class AWSManager : MonoBehaviour
 
             var request = new ListObjectsRequest()
             {
-                BucketName = "unitys3course9-ryoko",
+                BucketName = Bucketname,
             };
 
             S3Client.ListObjectsAsync(request, (responseObject) => 
             {
-                S3Client.GetObjectAsync("unitys3course9-ryoko", itemToDownload, (responseObject) => 
+                S3Client.GetObjectAsync(Bucketname, itemToDownload, (responseObject) => 
                 {
                     if(responseObject.Exception == null)
                     {
@@ -258,16 +182,20 @@ public class AWSManager : MonoBehaviour
                             }
                         }
 
-                        using(MemoryStream memory = new MemoryStream(data))
+                        ManageDownloadedPicture(data);
+                        /*using(MemoryStream memory = new MemoryStream(data))
                         {
                             BinaryFormatter bf = new BinaryFormatter();
-                            downloadedUserInfo = (UserInfo)bf.Deserialize(memory);
+
+                            //downloadedUserInfo = (UserInfo)bf.Deserialize(memory);
                             //UserName.text = downloadedUserInfo.userName;
                             //Email.text = downloadedUserInfo.email;
-                            downloadedImageData = downloadedUserInfo.picture;
+                            //downloadedImageData = downloadedUserInfo.picture;
+
+                            downloadedImageData = bf.Deserialize(memory).;
                         }
 
-                        ManageDownloadedPicture(downloadedImageData);
+                        ManageDownloadedPicture(downloadedImageData);/**/
                     }
                     else
                     {
