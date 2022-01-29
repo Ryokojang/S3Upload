@@ -31,7 +31,7 @@ public class AWSManager : MonoBehaviour
     //string Bucketname = "unitys3course9-ryoko";
     
     string IdentityPoolID = "ap-northeast-2:e33ea593-2e47-4aca-bd90-f797983beb0b";
-    string Bucketname = "lambda-test-bucket-resized";
+    string bucketname = "lambda-test-bucket-resized";
 
     public static AWSManager Instance
     {
@@ -90,6 +90,7 @@ public class AWSManager : MonoBehaviour
 
         _instance = this;
 
+        /*
         UnityInitializer.AttachToGameObject(this.gameObject);
         try
         {
@@ -98,9 +99,9 @@ public class AWSManager : MonoBehaviour
         catch(Exception e)
         {
             Debug.Log(3);
-        }
+        }/**/
 
-        Credentials.GetIdentityIdAsync(delegate (AmazonCognitoIdentityResult<string> result)
+        /*Credentials.GetIdentityIdAsync(delegate (AmazonCognitoIdentityResult<string> result)
         {
             if(result.Exception != null)
             {
@@ -108,7 +109,7 @@ public class AWSManager : MonoBehaviour
             }
             identityId = result.Response;
             Debug.Log(identityId);
-        });
+        });/**/
     }
 
     //data를 써서 filename으로 업로드
@@ -116,16 +117,18 @@ public class AWSManager : MonoBehaviour
     {
         MemoryStream ms = new MemoryStream(data);
 
-        PostObjectRequest request = new PostObjectRequest()
+        PutObjectRequest request = new PutObjectRequest()
         {
-            Bucket = Bucketname,
+            BucketName = bucketname,
             Key = filename,
             InputStream = ms,
             CannedACL = S3CannedACL.Private,
-            Region = _S3Region
+            //Region = _S3Region
         };
 
-        S3Client.PostObjectAsync(request, (responseObj) =>
+        PutObjectResponse response = S3Client.PutObject(request);
+        //S3Client.PutObjectAsync()
+        /*S3Client.PutObjectAsync(request, (responseObj) =>
         {
             if (responseObj.Exception == null)
             {
@@ -139,9 +142,9 @@ public class AWSManager : MonoBehaviour
                 UploadButton.GetComponent<Image>().color = Color.red;
                 UploadButtonText.text = "Error!";
             }
-        });
+        });/**/
     }
-
+    /*
     public InputField userNameSearch;
     public Text Email;
     public Text UserName;
@@ -195,7 +198,7 @@ public class AWSManager : MonoBehaviour
                             downloadedImageData = bf.Deserialize(memory).;
                         }
 
-                        ManageDownloadedPicture(downloadedImageData);/**/
+                        ManageDownloadedPicture(downloadedImageData);
                     }
                     else
                     {
@@ -219,5 +222,5 @@ public class AWSManager : MonoBehaviour
         tex.Apply();
         Sprite newImage = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100.0f);
         DownLoadImage.sprite = newImage;
-    }
+    }/**/
 }
