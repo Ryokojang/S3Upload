@@ -31,6 +31,8 @@ public class FilePicker : MonoBehaviour
         {
             if(path.Length != 0)
             {
+                FindObjectOfType<Write>().Path = path;
+
                 texture = NativeGallery.LoadImageAtPath(path, 5000);
                 copy = FindObjectOfType<Write>().duplicateTexture(texture);
                 newPictureData = copy.EncodeToJPG();

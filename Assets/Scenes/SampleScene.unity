@@ -803,10 +803,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 900433278}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 402f464cfda99644d8b95ecaa3520000, type: 3}
+  m_Script: {fileID: 11500000, guid: 1a976353c844d014cbc485ba111cf889, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  identityId: 
 --- !u!4 &900433280
 Transform:
   m_ObjectHideFlags: 0
@@ -2030,7 +2029,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 900433279}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: AWSManager, Assembly-CSharp
         m_MethodName: Download
         m_Mode: 1

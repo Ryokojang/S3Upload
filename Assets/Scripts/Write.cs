@@ -1,10 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.IO;
+using Amazon;
+//using Amazon.CognitoIdentity;
+using Amazon.S3;
+using Amazon.S3.Model;
 using UnityEngine.UI;
-using UnityEngine;
+using System;
+using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Reflection;
+using Amazon.S3.Transfer;
+
 
 public class Write : MonoBehaviour
 {
@@ -16,8 +25,8 @@ public class Write : MonoBehaviour
 
     public Image avatar;
     public Texture2D copy;
-    
 
+    public string Path;
     public void Button()
     {
         /*if (email.text == "" || userName.text == "")
@@ -34,10 +43,18 @@ public class Write : MonoBehaviour
             //    //picture = copy.EncodeToPNG()
             //    picture = copy.EncodeToJPG()
             //};
-            copy = duplicateTexture((Texture2D)avatar.mainTexture);
-            byte[] userInfoData = copy.EncodeToJPG();
-            FindObjectOfType<AWSManager>().UploadFile(userInfoData, userName.text);
+            
+            //copy = duplicateTexture((Texture2D)avatar.mainTexture);
+            //byte[] userInfoData = copy.EncodeToJPG();
+            //FindObjectOfType<AWSManager>().UploadFile(userInfoData, userName.text);
         }
+
+        //Task.Run(() => FindObjectOfType<NuGetS3>().UploadFileAsync(Path, userNam//e.text));
+        //FindObjectOfType<NuGetS3>().UploadFileAsync(Path, userName.text);
+        //FindObjectOfType<NuGetS3>().UploadFileAsync2(Path, userName.text);
+
+        //UploadFileAsync(Path, userName.text);
+        Task.Run(() => UploadFileAsync(Path, userName.text));
     }
 
     private byte[] ObjectToByteArray(UserInfo obj)
@@ -76,5 +93,36 @@ public class Write : MonoBehaviour
         tex.Apply();
         Sprite newImage = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100.0f);
         avatar.sprite = newImage;
+    }
+
+    private const string bucketName = "unitys3course9-ryoko";
+    //private const string keyName = "";
+    //private const string filePath = "";
+    private const string accessKeyID = "AKIAX5EHWC7R6T3ZRPDE";
+    private const string accessSecretKey = "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";
+    private static readonly RegionEndpoint buckertRegion = RegionEndpoint.APNortheast2;
+
+    public async Task UploadFileAsync(string filePath, string keyName)
+    {
+        try
+        {
+            Debug.Log("UploadFileAsync");
+            var fileTransferUtility = new TransferUtility(accessKeyID, accessSecretKey, buckertRegion);
+
+            Debug.Log("UploadFileAsync2");
+            await fileTransferUtility.UploadAsync(filePath, bucketName, keyName);
+
+            /*
+            Debug.Log("UploadFileAsync2");
+            using (var fileToUpload = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            {
+                await fileTransferUtility.UploadAsync(fileToUpload, bucketName, keyName);
+            }
+            Debug.Log("UploadFileAsync3");/**/
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e.Message);
+        }
     }
 }
