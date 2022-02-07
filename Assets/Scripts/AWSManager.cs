@@ -9,6 +9,8 @@ using UnityEngine.UI;
 using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading.Tasks;
+using System.Threading;
 
 public class AWSManager : MonoBehaviour
 {
@@ -18,20 +20,15 @@ public class AWSManager : MonoBehaviour
         int valueString = jo.Get<int>("what");
     }
 
-    public Button UploadButton;
-    public Text UploadButtonText;
+    string IdentityPoolID = "ap-northeast-2:e33ea593-2e47-4aca-bd90-f797983beb0b";
+    string bucketname = "lambda-test-bucket-resized/origin";
 
-    
-
-    public string Region = RegionEndpoint.APNortheast2.SystemName;
     public string identityId;
     private static AWSManager _instance;
 
     //public string IdentityPoolID = "ap-northeast-2:c4e9edd9-92a0-4389-82d6-494b7c056f1c";
     //string Bucketname = "unitys3course9-ryoko";
-    
-    string IdentityPoolID = "ap-northeast-2:e33ea593-2e47-4aca-bd90-f797983beb0b";
-    string bucketname = "lambda-test-bucket-resized";
+
 
     public static AWSManager Instance
     {
@@ -59,9 +56,9 @@ public class AWSManager : MonoBehaviour
         }
     }
 
-    
 
-    public string S3Region = RegionEndpoint.APNortheast2.SystemName;
+
+    private string S3Region = RegionEndpoint.APNortheast2.SystemName;
     private RegionEndpoint _S3Region
     {
         get
@@ -76,7 +73,7 @@ public class AWSManager : MonoBehaviour
     {
         get
         {
-            if(_S3Client==null)
+            if (_S3Client == null)
             {
                 _S3Client = new AmazonS3Client(new CognitoAWSCredentials(IdentityPoolID, RegionEndpoint.APNortheast2), _S3Region);
             }
@@ -123,27 +120,28 @@ public class AWSManager : MonoBehaviour
             Key = filename,
             InputStream = ms,
             CannedACL = S3CannedACL.Private,
-            //Region = _S3Region
         };
-
         PutObjectResponse response = S3Client.PutObject(request);
-        //S3Client.PutObjectAsync()
-        /*S3Client.PutObjectAsync(request, (responseObj) =>
+        if(response.HttpStatusCode == System.Net.HttpStatusCode.OK)
         {
-            if (responseObj.Exception == null)
-            {
-                Debug.Log("Upload Success");
-                UploadButton.GetComponent<Image>().color = Color.green;
-                UploadButtonText.text = "Success!";
-            }
-            else
-            {
-                Debug.Log("Error " + responseObj.Exception);
-                UploadButton.GetComponent<Image>().color = Color.red;
-                UploadButtonText.text = "Error!";
-            }
-        });/**/
+            Debug.Log("Success");
+        }
     }
+
+    public async Task<PutObjectResponse> UploadFileAsync(byte[] data, string filename)
+    {
+        MemoryStream ms = new MemoryStream(data);
+
+        PutObjectRequest request = new PutObjectRequest()
+        {
+            BucketName = bucketname,
+            Key = filename,
+            InputStream = ms,
+            CannedACL = S3CannedACL.Private,
+        };
+        return await S3Client.PutObjectAsync(request);
+    }
+
     /*
     public InputField userNameSearch;
     public Text Email;
