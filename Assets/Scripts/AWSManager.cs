@@ -9,29 +9,28 @@ using UnityEngine.UI;
 using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Reflection;
 
 public class AWSManager : MonoBehaviour
 {
+
     public void UsedOnlyForAOTCOdeGeneration()
     {
         AndroidJavaObject jo = new AndroidJavaObject("android.os.Message");
         int valueString = jo.Get<int>("what");
     }
 
-    public Button UploadButton;
-    public Text UploadButtonText;
+    //string IdentityPoolID = "ap-northeast-2:e33ea593-2e47-4aca-bd90-f797983beb0b";
+    //string bucketname = "lambda-test-bucket-resized/origin";
 
-    
-
-    public string Region = RegionEndpoint.APNortheast2.SystemName;
     public string identityId;
     private static AWSManager _instance;
 
-    //public string IdentityPoolID = "ap-northeast-2:c4e9edd9-92a0-4389-82d6-494b7c056f1c";
-    //string Bucketname = "unitys3course9-ryoko";
-    
-    string IdentityPoolID = "ap-northeast-2:e33ea593-2e47-4aca-bd90-f797983beb0b";
-    string Bucketname = "lambda-test-bucket-resized";
+    public string IdentityPoolID = "ap-northeast-2:c4e9edd9-92a0-4389-82d6-494b7c056f1c";
+    string bucketname = "unitys3course9-ryoko";
+
 
     public static AWSManager Instance
     {
@@ -59,16 +58,16 @@ public class AWSManager : MonoBehaviour
         }
     }
 
-    
 
-    public string S3Region = RegionEndpoint.APNortheast2.SystemName;
-    private RegionEndpoint _S3Region
-    {
-        get
-        {
-            return RegionEndpoint.GetBySystemName(S3Region);
-        }
-    }
+
+    /*private string S3Region = RegionEndpoint.APNortheast2.SystemName;
+     private RegionEndpoint _S3Region
+     {
+         get
+         {
+             return RegionEndpoint.GetBySystemName(S3Region);
+         }
+     }/**/
 
     private AmazonS3Client _S3Client;
 
@@ -76,21 +75,45 @@ public class AWSManager : MonoBehaviour
     {
         get
         {
-            if(_S3Client==null)
+            if (_S3Client == null)
             {
-                _S3Client = new AmazonS3Client(new CognitoAWSCredentials(IdentityPoolID, RegionEndpoint.APNortheast2), _S3Region);
+                //_S3Client = new AmazonS3Client(new CognitoAWSCredentials(IdentityPoolID, RegionEndpoint.APNortheast2), _S3Region);
+                //_S3Client = new AmazonS3Client("AKIAX5EHWC7R6T3ZRPDE", "8FoOlZX3b5pHFKs1lFnsIjFFljmhxQfq9OjpHJzs", _S3Region);
+                _S3Client = new AmazonS3Client("AKIAX5EHWC7R6T3ZRPDE", "8FoOlZX3b5pHFKs1lFnsIjFFljmhxQfq9OjpHJzs", RegionEndpoint.APNortheast2);
             }
             return _S3Client;
         }
     }
 
+    void LoadAssemble()
+    {
+        List<string> assemblies = new List<String>() {
+                "AWSSDK.S3.dll",
+                "AWSSDK.Core.dll",
+                "AWSSDK.CognitoIdentity.dll",
+                "AWSSDK.SecurityToken.dll"
+            };
+        string folderPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+        foreach (string assemblyName in assemblies)
+        {
+            string assemblyPath = Path.Combine(folderPath, assemblyName);
+            if (!File.Exists(assemblyPath))
+                continue;
+            Assembly assembly = Assembly.LoadFrom(assemblyPath);
+
+        }
+    }
+
     private void Start()
     {
+        //LoadAssemble();
         Debug.Log("Start!");
 
         _instance = this;
 
-        UnityInitializer.AttachToGameObject(this.gameObject);
+
+        /*UnityInitializer.AttachToGameObject(this.gameObject);
         try
         {
             AWSConfigs.HttpClient = AWSConfigs.HttpClientOption.UnityWebRequest;
@@ -98,9 +121,9 @@ public class AWSManager : MonoBehaviour
         catch(Exception e)
         {
             Debug.Log(3);
-        }
+        }/**/
 
-        Credentials.GetIdentityIdAsync(delegate (AmazonCognitoIdentityResult<string> result)
+        /*Credentials.GetIdentityIdAsync(delegate (AmazonCognitoIdentityResult<string> result)
         {
             if(result.Exception != null)
             {
@@ -108,40 +131,66 @@ public class AWSManager : MonoBehaviour
             }
             identityId = result.Response;
             Debug.Log(identityId);
-        });
+        });/**/
+
+        //string Result = await Credentials.GetIdentityIdAsync();
+        //InitAWS;
+        //Task.Run(()=>InitAWS());
+    }
+
+    async Task InitAWS()
+    {
+        string Result = await Credentials.GetIdentityIdAsync();
+        Debug.Log("InitAWS : " + Result);
     }
 
     //data를 써서 filename으로 업로드
     public void UploadFile(byte[] data, string filename)
     {
+        Debug.Log("UploadFile start");
+
         MemoryStream ms = new MemoryStream(data);
 
-        PostObjectRequest request = new PostObjectRequest()
+        Debug.Log("UploadFile 2");
+        PutObjectRequest request = new PutObjectRequest()
         {
-            Bucket = Bucketname,
+            BucketName = bucketname,
             Key = filename,
             InputStream = ms,
             CannedACL = S3CannedACL.Private,
-            Region = _S3Region
         };
 
-        S3Client.PostObjectAsync(request, (responseObj) =>
+        Debug.Log("UploadFile 3");
+        if (_S3Client == null)
         {
-            if (responseObj.Exception == null)
-            {
-                Debug.Log("Upload Success");
-                UploadButton.GetComponent<Image>().color = Color.green;
-                UploadButtonText.text = "Success!";
-            }
-            else
-            {
-                Debug.Log("Error " + responseObj.Exception);
-                UploadButton.GetComponent<Image>().color = Color.red;
-                UploadButtonText.text = "Error!";
-            }
-        });
+            //_S3Client = new AmazonS3Client(new CognitoAWSCredentials(IdentityPoolID, RegionEndpoint.APNortheast2), _S3Region);
+            //_S3Client = new AmazonS3Client("AKIAX5EHWC7R6T3ZRPDE", "8FoOlZX3b5pHFKs1lFnsIjFFljmhxQfq9OjpHJzs", _S3Region);
+            _S3Client = new AmazonS3Client("AKIAX5EHWC7R6T3ZRPDE", "8FoOlZX3b5pHFKs1lFnsIjFFljmhxQfq9OjpHJzs", RegionEndpoint.APNortheast2);
+        }
+
+        Debug.Log("UploadFile 4");
+        PutObjectResponse response = S3Client.PutObject(request);
+        if (response.HttpStatusCode == System.Net.HttpStatusCode.OK)
+        {
+            Debug.Log("Success");
+        }
     }
 
+    public async Task<PutObjectResponse> UploadFileAsync(byte[] data, string filename)
+    {
+        MemoryStream ms = new MemoryStream(data);
+
+        PutObjectRequest request = new PutObjectRequest()
+        {
+            BucketName = bucketname,
+            Key = filename,
+            InputStream = ms,
+            CannedACL = S3CannedACL.Private,
+        };
+        return await S3Client.PutObjectAsync(request);
+    }
+
+    /*
     public InputField userNameSearch;
     public Text Email;
     public Text UserName;
@@ -195,7 +244,7 @@ public class AWSManager : MonoBehaviour
                             downloadedImageData = bf.Deserialize(memory).;
                         }
 
-                        ManageDownloadedPicture(downloadedImageData);/**/
+                        ManageDownloadedPicture(downloadedImageData);
                     }
                     else
                     {
@@ -219,5 +268,5 @@ public class AWSManager : MonoBehaviour
         tex.Apply();
         Sprite newImage = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100.0f);
         DownLoadImage.sprite = newImage;
-    }
+    }/**/
 }
